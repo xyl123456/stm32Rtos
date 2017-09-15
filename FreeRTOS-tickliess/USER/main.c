@@ -30,26 +30,29 @@ TaskHandle_t StartTask_Handler;
 //任务函数
 void start_task(void *pvParameters);
 
+/*串口1任务*/
 //任务优先级
-#define TASK1_TASK_PRIO		2
+#define UART1_TASK_PRIO 2
 //任务堆栈大小	
-#define TASK1_STK_SIZE 		256  
+#define UART1_STK_SIZE  256 
 //任务句柄
-TaskHandle_t Task1Task_Handler;
+TaskHandle_t UART1_Handler;
 //任务函数
-void task1_task(void *pvParameters);
+void UART1_task(void *pvParameters);
 
-//任务优先级
-#define DATAPROCESS_TASK_PRIO 3
+/*串口2任务*/
+//任务优先级，
+#define UART2_TASK_PRIO		3
 //任务堆栈大小	
-#define DATAPROCESS_STK_SIZE  256 
+#define UART2_STK_SIZE 		256  
 //任务句柄
-TaskHandle_t DataProcess_Handler;
+TaskHandle_t UART2Task_Handler;
 //任务函数
-void DataProcess_task(void *pvParameters);
+void UART2_task(void *pvParameters);
 
 //二值信号量句柄
 SemaphoreHandle_t BinarySemaphore;	//二值信号量句柄
+SemaphoreHandle_t BinarySemaphore_uart2;	//串口2二值信号量句柄
 
 //用于命令解析用的命令值
 #define LED1ON	1
@@ -63,12 +66,14 @@ SemaphoreHandle_t BinarySemaphore;	//二值信号量句柄
 void PreSleepProcessing(uint32_t ulExpectedIdleTime)
 {
 	//关闭某些低功耗模式下不使用的外设时钟，此处只是演示性代码
+/*
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,DISABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,DISABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,DISABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE,DISABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF,DISABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG,DISABLE);
+	*/
 }
 
 //退出低功耗模式以后需要处理的事情
@@ -76,12 +81,14 @@ void PreSleepProcessing(uint32_t ulExpectedIdleTime)
 void PostSleepProcessing(uint32_t ulExpectedIdleTime)
 {
 	//退出低功耗模式以后打开那些被关闭的外设时钟，此处只是演示性代码
+	/*
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG,ENABLE);	              
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG,ENABLE);	 
+*/	
 }
 
 //将字符串中的小写字母转换为大写
@@ -114,7 +121,9 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//设置系统中断优先级分组4	 
 	delay_init();	    				//延时函数初始化	 
-	uart_init(115200);					//初始化串口
+	//uart_init(115200);					//初始化串口
+	myuart_init(1,115200);//初始化串口1
+	myuart_init(2,115200);//初始化串口2
 	LED_Init();		  					//初始化LED
 	KEY_Init();							//初始化按键
 	BEEP_Init();						//初始化蜂鸣器
@@ -136,37 +145,56 @@ void start_task(void *pvParameters)
     taskENTER_CRITICAL();           //进入临界区
 	
 	//创建二值信号量
-	BinarySemaphore=xSemaphoreCreateBinary();	
-    //创建TASK1任务
-    xTaskCreate((TaskFunction_t )task1_task,             
-                (const char*    )"task1_task",           
-                (uint16_t       )TASK1_STK_SIZE,        
+	BinarySemaphore=xSemaphoreCreateBinary();
+	//串口2二值信号量
+	BinarySemaphore_uart2=xSemaphoreCreateBinary();
+    //创建UART2任务
+    xTaskCreate((TaskFunction_t )UART2_task,             
+                (const char*    )"UART2_task",           
+                (uint16_t       )UART2_STK_SIZE,        
                 (void*          )NULL,                  
-                (UBaseType_t    )TASK1_TASK_PRIO,        
-                (TaskHandle_t*  )&Task1Task_Handler);   
-    //创建TASK2任务
-    xTaskCreate((TaskFunction_t )DataProcess_task,     
-                (const char*    )"keyprocess_task",   
-                (uint16_t       )DATAPROCESS_STK_SIZE,
+                (UBaseType_t    )UART2_TASK_PRIO,        
+                (TaskHandle_t*  )&UART2Task_Handler);   
+    //创建UART1任务
+    xTaskCreate((TaskFunction_t )UART1_task,     
+                (const char*    )"UART1_task",   
+                (uint16_t       )UART1_STK_SIZE,
                 (void*          )NULL,
-                (UBaseType_t    )DATAPROCESS_TASK_PRIO,
-                (TaskHandle_t*  )&DataProcess_Handler); 
+                (UBaseType_t    )UART1_TASK_PRIO,
+                (TaskHandle_t*  )&UART1_Handler); 
     vTaskDelete(StartTask_Handler); //删除开始任务
     taskEXIT_CRITICAL();            //退出临界区
 }
 
-//task1任务函数
-void task1_task(void *pvParameters)
+//UART2任务函数
+void UART2_task(void *pvParameters)
 {
+	u8 len=0;
+	BaseType_t err=pdFALSE;
+	
+	u8 *CommandStr;
 	while(1)
 	{
-		LED0=!LED0;
-        vTaskDelay(500);             	//延时500ms，也就是500个时钟节拍	
+		err=xSemaphoreTake(BinarySemaphore_uart2,portMAX_DELAY);	//获取信号量
+		if(err==pdTRUE)										//获取信号量成功
+		{
+			len=USART2_RX_STA&0x3fff;						//得到此次接收到的数据长度
+			CommandStr=mymalloc(SRAMIN,len+1);				//申请内存
+			CommandStr[len]='\0';							//加上字符串结尾符号
+			sprintf((char*)CommandStr,"%s",USART2_RX_BUF);
+			//数据处理
+			//CommandValue=CommandProcess(CommandStr);		//命令解析
+			myuart_send(2,CommandStr,len+1);
+		
+			USART2_RX_STA=0;
+			memset(USART2_RX_BUF,0,USART_REC_LEN);			//串口接收缓冲区清零
+			myfree(SRAMIN,CommandStr);						//释放内存
+		}
 	}
 }
 
-//DataProcess_task函数
-void DataProcess_task(void *pvParameters)
+//UART1_task函数
+void UART1_task(void *pvParameters)
 {
 	u8 len=0;
 	u8 CommandValue=COMMANDERR;
