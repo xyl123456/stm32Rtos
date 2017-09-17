@@ -179,16 +179,14 @@ void UART2_task(void *pvParameters)
 		if(err==pdTRUE)										//获取信号量成功
 		{
 			len=USART2_RX_STA&0x3fff;						//得到此次接收到的数据长度
-			CommandStr=mymalloc(SRAMIN,len+1);				//申请内存
-			CommandStr[len]='\0';							//加上字符串结尾符号
-			sprintf((char*)CommandStr,"%s",USART2_RX_BUF);
-			//数据处理
-			//CommandValue=CommandProcess(CommandStr);		//命令解析
-			myuart_send(2,CommandStr,len+1);
+			CommandStr=mymalloc(SRAMIN,len);				//申请内存
+			mymemcpy((char *)CommandStr,USART2_RX_BUF,len);
+			
+			myuart_send(2,CommandStr,len);
 		
 			USART2_RX_STA=0;
 			memset(USART2_RX_BUF,0,USART_REC_LEN);			//串口接收缓冲区清零
-			myfree(SRAMIN,CommandStr);						//释放内存
+			myfree(SRAMIN,CommandStr);				        //释放内存
 		}
 	}
 }

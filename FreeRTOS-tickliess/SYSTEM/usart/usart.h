@@ -40,6 +40,8 @@ extern void myuart_send(u8 port,u8 buf[],u8 len);
 void uart_init(u32 bound);
 void uart_init2(u32 bound);
 extern void myuart_init(u8 port,u32 bound);
+
+//串口处理的数据类型
 #endif
 
 

@@ -196,6 +196,8 @@ void uart_init2(u32 bound){
 
 extern SemaphoreHandle_t BinarySemaphore;	//二值信号量句柄,串口1
 extern SemaphoreHandle_t BinarySemaphore_uart2;//串口2二值信号量句柄
+
+
 void USART1_IRQHandler(void)                	//串口1中断服务程序
 {
 	u8 Res;
@@ -238,28 +240,29 @@ void USART2_IRQHandler(void)                	//串口2中断服务程序
 	u8 Res;
 	BaseType_t xHigherPriorityTaskWoken;
 	
-	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)  //接收中断(数据是否处于接收状态)
 	{
 		Res =USART_ReceiveData(USART2);	//读取接收到的数据
+		USART2_RX_BUF[USART2_RX_STA&0X3FFF]=Res ;
+		USART2_RX_STA++;
+		
+		if(USART2_RX_BUF[0]==0x42)
+		{
+			USART2_RX_STA|=0x4000;//接收到0x42，开始接收新的数据
+		}
+		
 		
 		if((USART2_RX_STA&0x8000)==0)//接收未完成
+		{
+			if(USART2_RX_STA&0x4000)//接收到了0x42
 			{
-			if(USART2_RX_STA&0x4000)//接收到了0x0d
-				{
-				if(Res!=0x0a)USART2_RX_STA=0;//接收错误,重新开始
-				else USART2_RX_STA|=0x8000;	//接收完成了 
-				}
-			else //还没收到0X0D
-				{	
-				if(Res==0x0d)USART2_RX_STA|=0x4000;
-				else
-					{
-					USART2_RX_BUF[USART2_RX_STA&0X3FFF]=Res ;
-					USART2_RX_STA++;
-					if(USART2_RX_STA>(USART_REC_LEN-1))USART2_RX_STA=0;//接收数据错误,重新开始接收	  
-					}		 
-				}
-			}   		 
+				if((USART2_RX_STA&0x3FFF)==0x20) USART2_RX_STA |=0x8000;//接收完成
+			}
+			else
+			{
+				USART2_RX_STA=0;//接收错误,重新开始
+			}
+		}	
     } 
 	if((USART2_RX_STA&0x8000)&&(BinarySemaphore_uart2!=NULL))//接收到数据，并且二值信号量有效
 	{
