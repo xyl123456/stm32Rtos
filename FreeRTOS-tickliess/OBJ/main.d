@@ -52,3 +52,4 @@
 ..\obj\main.o: ..\FreeRTOS\include\list.h
 ..\obj\main.o: ..\FreeRTOS\include\semphr.h
 ..\obj\main.o: ..\FreeRTOS\include\queue.h
+..\obj\main.o: types.h

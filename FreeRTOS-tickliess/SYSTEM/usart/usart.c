@@ -219,7 +219,7 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 				if(Res==0x0d)USART_RX_STA|=0x4000;
 				else
 					{
-					USART_RX_BUF[USART_RX_STA&0X3FFF]=Res ;
+					USART_RX_BUF[USART_RX_STA&0X3FFF]=Res;
 					USART_RX_STA++;
 					if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
 					}		 

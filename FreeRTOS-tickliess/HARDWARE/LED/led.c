@@ -14,13 +14,14 @@
 ////////////////////////////////////////////////////////////////////////////////// 	   
 
 //初始化PB5和PE5为输出口.并使能这两个口的时钟		    
-//LED IO初始化
+//LED IO初始化,
 void LED_Init(void)
 {
  
  GPIO_InitTypeDef  GPIO_InitStructure;
  	
- RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOE, ENABLE);	 //使能PB,PE端口时钟
+ RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOD|RCC_APB2Periph_GPIOE|
+	RCC_APB2Periph_GPIOG, ENABLE);	 //使能PB,PE端口时钟
 	
  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;				 //LED0-->PB.5 端口配置
  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //推挽输出
@@ -31,5 +32,19 @@ void LED_Init(void)
  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;	    		 //LED1-->PE.5 端口配置, 推挽输出
  GPIO_Init(GPIOE, &GPIO_InitStructure);	  				 //推挽输出 ，IO口速度为50MHz
  GPIO_SetBits(GPIOE,GPIO_Pin_5); 						 //PE.5 输出高 
+	
+	
+ //继电器和紫外线 PD6  PD7  PG9  PG11
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6|GPIO_Pin_7;	    		 //relay1-->PD.6 端口配置, 推挽输出
+ GPIO_Init(GPIOE, &GPIO_InitStructure);	  				 //推挽输出 ，IO口速度为50MHz
+ //GPIO_SetBits(GPIOD,GPIO_Pin_6|GPIO_Pin_7); 						 //PD.6,PD7 输出高 
+ GPIO_ResetBits(GPIOD,GPIO_Pin_6|GPIO_Pin_7); 						 //PD.6,PD7 输出高 
+ 
+ GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9|GPIO_Pin_11;
+ GPIO_Init(GPIOG,&GPIO_InitStructure);
+ GPIO_ResetBits(GPIOD,GPIO_Pin_9|GPIO_Pin_11);
+	
+	
 }
+
  

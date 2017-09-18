@@ -16,6 +16,14 @@
 #define LED0 PBout(5)// PB5
 #define LED1 PEout(5)// PE5	
 
+
+#define RELAY1 PDout(6)// PD6
+#define RELAY2 PDout(7)// PD7
+#define RELAY3 PGout(9)// PG9
+#define RELAY4 PGout(11)// PG11
+
+
+
 void LED_Init(void);//≥ı ºªØ
 
 		 				    
