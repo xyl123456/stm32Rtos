@@ -1,5 +1,5 @@
 Dependencies for Project 'FreeRTOS', Target 'FreeRTOS': (DO NOT MODIFY !)
-F (.\main.c)(0x59BF433A)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
+F (.\main.c)(0x59C0C916)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
 I (..\SYSTEM\sys\sys.h)(0x583BA68C)
 I (..\USER\stm32f10x.h)(0x4D783CB4)
 I (..\CORE\core_cm3.h)(0x4D523B58)
@@ -32,11 +32,11 @@ I (..\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
 I (..\SYSTEM\delay\delay.h)(0x583BAA0A)
 I (..\SYSTEM\usart\usart.h)(0x59BF1D66)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
-I (..\HARDWARE\LED\led.h)(0x59BF3D46)
+I (..\HARDWARE\LED\led.h)(0x59C070FA)
 I (..\HARDWARE\TIMER\timer.h)(0x583BE760)
 I (..\HARDWARE\LCD\lcd.h)(0x5539BD2A)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5475F300)
-I (..\HARDWARE\KEY\key.h)(0x550A8568)
+I (..\HARDWARE\KEY\key.h)(0x59C0C454)
 I (..\HARDWARE\BEEP\beep.h)(0x50517C96)
 I (..\MALLOC\malloc.h)(0x583BE262)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5475F300)
@@ -52,7 +52,7 @@ I (..\FreeRTOS\include\task.h)(0x573F3A18)
 I (..\FreeRTOS\include\list.h)(0x573F3A18)
 I (..\FreeRTOS\include\semphr.h)(0x573F3A18)
 I (..\FreeRTOS\include\queue.h)(0x573F3A18)
-I (types.h)(0x59BF3DD8)
+I (types.h)(0x59C0C292)
 F (.\stm32f10x_it.c)(0x583BA64A)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\stm32f10x_it.o --omf_browse ..\obj\stm32f10x_it.crf --depend ..\obj\stm32f10x_it.d)
 I (stm32f10x_it.h)(0x4D99A426)
 I (stm32f10x.h)(0x4D783CB4)
@@ -114,8 +114,8 @@ I (..\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x504F415E)
 I (..\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
-F (..\HARDWARE\LED\led.c)(0x59BF3518)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\led.o --omf_browse ..\obj\led.crf --depend ..\obj\led.d)
-I (..\HARDWARE\LED\led.h)(0x59BF3D46)
+F (..\HARDWARE\LED\led.c)(0x59C088FC)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\led.o --omf_browse ..\obj\led.crf --depend ..\obj\led.d)
+I (..\HARDWARE\LED\led.h)(0x59C070FA)
 I (..\SYSTEM\sys\sys.h)(0x583BA68C)
 I (..\USER\stm32f10x.h)(0x4D783CB4)
 I (..\CORE\core_cm3.h)(0x4D523B58)
@@ -176,7 +176,7 @@ I (..\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x504F415E)
 I (..\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
-I (..\HARDWARE\LED\led.h)(0x59BF3D46)
+I (..\HARDWARE\LED\led.h)(0x59C070FA)
 I (..\SYSTEM\usart\usart.h)(0x59BF1D66)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (..\MALLOC\malloc.h)(0x583BE262)
@@ -228,7 +228,7 @@ I (..\HARDWARE\LCD\font.h)(0x550289B8)
 I (..\SYSTEM\usart\usart.h)(0x59BF1D66)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (..\SYSTEM\delay\delay.h)(0x583BAA0A)
-F (..\HARDWARE\KEY\key.c)(0x550BA50C)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\key.o --omf_browse ..\obj\key.crf --depend ..\obj\key.d)
+F (..\HARDWARE\KEY\key.c)(0x59C0C9E6)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\key.o --omf_browse ..\obj\key.crf --depend ..\obj\key.d)
 I (..\USER\stm32f10x.h)(0x4D783CB4)
 I (..\CORE\core_cm3.h)(0x4D523B58)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
@@ -257,9 +257,13 @@ I (..\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x504F415E)
 I (..\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
-I (..\HARDWARE\KEY\key.h)(0x550A8568)
+I (..\HARDWARE\KEY\key.h)(0x59C0C454)
 I (..\SYSTEM\sys\sys.h)(0x583BA68C)
+I (..\HARDWARE\LED\led.h)(0x59C070FA)
+I (..\SYSTEM\usart\usart.h)(0x59BF1D66)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (..\SYSTEM\delay\delay.h)(0x583BAA0A)
+I (..\USER\types.h)(0x59C0C292)
 F (..\HARDWARE\BEEP\beep.c)(0x50518100)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\beep.o --omf_browse ..\obj\beep.crf --depend ..\obj\beep.d)
 I (..\HARDWARE\BEEP\beep.h)(0x50517C96)
 I (..\SYSTEM\sys\sys.h)(0x583BA68C)
@@ -365,7 +369,7 @@ I (..\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x504F415E)
 I (..\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
-F (..\SYSTEM\usart\usart.c)(0x59BF414E)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\usart.o --omf_browse ..\obj\usart.crf --depend ..\obj\usart.d)
+F (..\SYSTEM\usart\usart.c)(0x59C0C454)(-c --cpu Cortex-M3 -g -O2 --apcs=interwork --split_sections -I..\USER -I..\CORE -I..\STM32F10x_FWLib\inc -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\MALLOC -I..\FreeRTOS\include -I..\FreeRTOS\portable\RVDS\ARM_CM3 -I..\HARDWARE\LED -I..\HARDWARE\TIMER -I..\HARDWARE\LCD -I..\HARDWARE\EXTI -I..\HARDWARE\KEY -I..\HARDWARE\BEEP-I E:\stm32zet6\FreeRTOS-tickliess\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="514" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\usart.o --omf_browse ..\obj\usart.crf --depend ..\obj\usart.d)
 I (..\SYSTEM\sys\sys.h)(0x583BA68C)
 I (..\USER\stm32f10x.h)(0x4D783CB4)
 I (..\CORE\core_cm3.h)(0x4D523B58)

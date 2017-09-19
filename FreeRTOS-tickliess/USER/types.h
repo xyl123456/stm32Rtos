@@ -1,5 +1,7 @@
 #ifndef __TYPES_H
 #define __TYPES_H
+#include "sys.h"
+
 //º§π‚PM2.5
 typedef union PM25_up
 {

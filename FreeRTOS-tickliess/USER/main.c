@@ -21,7 +21,7 @@
  广州市星翼电子科技有限公司  
  作者：正点原子 @ALIENTEK
 ************************************************/
-
+//任务定义************************************************/
 //任务优先级
 #define START_TASK_PRIO		1
 //任务堆栈大小	
@@ -37,14 +37,9 @@ void start_task(void *pvParameters);
 //任务堆栈大小	
 #define UART1_STK_SIZE  256 
 //任务句柄
-TaskHandle_t UART1_Handler;
+TaskHandle_t UART1Task_Handler;
 //任务函数
 void UART1_task(void *pvParameters);
-
-PM25_up_t PM25_data;
-Dev_control_t DEVCON_data;//设备控制
-Dev_dp_t  DEVIDSET_data;
-Head_up_t HEAD_data;
 
 /*串口2任务*/
 //任务优先级，
@@ -56,6 +51,29 @@ TaskHandle_t UART2Task_Handler;
 //任务函数
 void UART2_task(void *pvParameters);
 
+/*按键处理任务*/
+//任务优先级，
+#define KEY_TASK_PRIO		4
+//任务堆栈大小	
+#define KEY_STK_SIZE 		256  
+//任务句柄
+TaskHandle_t KEYTask_Handler;
+//任务函数
+void KEY_task(void *pvParameters);
+
+
+PM25_up_t PM25_data;
+Dev_control_t DEVCON_data;//设备控制
+Dev_dp_t  DEVIDSET_data;
+Head_up_t HEAD_data;
+
+void PreSleepProcessing(uint32_t ulExpectedIdleTime);
+void PostSleepProcessing(uint32_t ulExpectedIdleTime);
+
+void LowerToCap(u8 *str,u8 len);
+void CommandProcess(u8 buf[],u8 len);
+
+void LowerToCap(u8 *str,u8 len);
 //二值信号量句柄
 SemaphoreHandle_t BinarySemaphore;	//二值信号量句柄
 SemaphoreHandle_t BinarySemaphore_uart2;	//串口2二值信号量句柄
@@ -75,11 +93,6 @@ void PreSleepProcessing(uint32_t ulExpectedIdleTime)
 	//关闭某些低功耗模式下不使用的外设时钟，此处只是演示性代码
 /*
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,DISABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,DISABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,DISABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE,DISABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF,DISABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG,DISABLE);
 	*/
 }
 
@@ -89,12 +102,7 @@ void PostSleepProcessing(uint32_t ulExpectedIdleTime)
 {
 	//退出低功耗模式以后打开那些被关闭的外设时钟，此处只是演示性代码
 	/*
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG,ENABLE);	 
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE); 
 */	
 }
 
@@ -118,12 +126,10 @@ void CommandProcess(u8 buf[],u8 len)
 {
 	u8 CMD_data=buf[4];
 	u8 data_buf[40];
-	myuart_send(1,buf,len);
 	mymemcpy(data_buf,buf,len);
-	
 	switch(len)
 	{
-		case 13:
+		case 0x0d:
 			if(CMD_data == 0x01)
 			{
 				//心跳
@@ -136,7 +142,7 @@ void CommandProcess(u8 buf[],u8 len)
 				mymemcpy(DEVIDSET_data.data_buf,buf,len);
 			}
 			break;
-		case 24:
+		case 0x16:
 			if(CMD_data == 0x05)
 			{
 				mymemcpy(DEVCON_data.data_buf,buf,len);
@@ -144,7 +150,6 @@ void CommandProcess(u8 buf[],u8 len)
 				if(DEVCON_data.data_core.Cmd_code[0]==0x81)
 				{
 					//开关机,关闭屏幕，继电器，PM25等外设
-					
 					
 				}
 				if(DEVCON_data.data_core.Cmd_code[0]==0x82)
@@ -154,49 +159,12 @@ void CommandProcess(u8 buf[],u8 len)
 				if(DEVCON_data.data_core.Cmd_code[0]==0x84)
 				{
 					//风机0-4
-					if(DEVCON_data.data_core.Cmd_code[2]==0x0B)
-					{
-						//0档，待机
-					}
-					if(DEVCON_data.data_core.Cmd_code[2]==0x11)
-					{
-						//1档
-						RELAY1=1;
-						RELAY2=0;
-						RELAY3=0;
-						RELAY4=0;
-					}
-					if(DEVCON_data.data_core.Cmd_code[2]==0x12)
-					{
-						//2档
-						RELAY1=1;
-						RELAY2=1;
-						RELAY3=0;
-						RELAY4=0;
-					}
-					if(DEVCON_data.data_core.Cmd_code[2]==0x13)
-					{
-						//3档
-						RELAY1=1;
-						RELAY2=1;
-						RELAY3=1;
-						RELAY4=0;
-					}
-					if(DEVCON_data.data_core.Cmd_code[2]==0x14)
-					{
-						//4档
-						RELAY1=1;
-						RELAY2=1;
-						RELAY3=1;
-						RELAY4=1;
-					}
-					
+					FAN_set(DEVCON_data.data_core.Cmd_code[2]);
 				}
 			}
 			break;
 			default:
-			break;
-		
+			break;	
 	}
 }
 
@@ -204,7 +172,6 @@ int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//设置系统中断优先级分组4	 
 	delay_init();	    				//延时函数初始化	 
-	//uart_init(115200);					//初始化串口
 	myuart_init(1,115200);//初始化串口1
 	myuart_init(2,9600);//初始化串口2
 	LED_Init();		  					//初始化LED
@@ -244,9 +211,17 @@ void start_task(void *pvParameters)
                 (uint16_t       )UART1_STK_SIZE,
                 (void*          )NULL,
                 (UBaseType_t    )UART1_TASK_PRIO,
-                (TaskHandle_t*  )&UART1_Handler); 
+                (TaskHandle_t*  )&UART1Task_Handler); 
+		//创建按键任务
+    xTaskCreate((TaskFunction_t )KEY_task,     
+                (const char*    )"KEY_task",   
+                (uint16_t       )KEY_STK_SIZE,
+                (void*          )NULL,
+                (UBaseType_t    )KEY_TASK_PRIO,
+                (TaskHandle_t*  )&KEYTask_Handler); 
+								
     vTaskDelete(StartTask_Handler); //删除开始任务
-    taskEXIT_CRITICAL();            //退出临界区
+    taskEXIT_CRITICAL();            //退出临界区						
 }
 
 //UART2任务函数
@@ -287,19 +262,77 @@ void UART1_task(void *pvParameters)
 		if(err==pdTRUE)										//获取信号量成功
 		{
 			len=USART_RX_STA&0x3fff;						//得到此次接收到的数据长度
-			//CommandStr=mymalloc(SRAMIN,len);				//申请内存
-			//sprintf((char*)CommandStr,"%s",USART_RX_BUF);
+
 			mymemcpy(CommandStr,USART_RX_BUF,len);
-			//CommandStr[len]='\0';							//加上字符串结尾符号
-			//LowerToCap(CommandStr,len);						//将字符串转换为大写		
+
 			CommandProcess(CommandStr,len);		//命令解析
 		
 			USART_RX_STA=0;
 			memset(USART_RX_BUF,0,USART_REC_LEN);			//串口接收缓冲区清零
-			myfree(SRAMIN,CommandStr);						//释放内存
+			memset(CommandStr,0,40);	
 		}
 	}
 }
 
+void KEY_task(void *pvParameters)
+{
+	u8 key;
+	u8 mode_temp;
+	while(1){
+		key=KEY_Scan(0);
+		switch(key)
+		{
+			case WKUP_PRES:
+				//开关机
+			if(SYS_STA&0x80)
+			{
+				FAN_set(0x0B);//待机状态
+			}else
+			{
+				FAN_set(0x11);//默认一档风
+			}
+			#ifdef __BUG
+			myuart_send(1,&SYS_STA,1);
+			#endif
+				break;
+			
+			case KEY0_PRES:
+				//设置模式
+				break;
+			
+			case KEY1_PRES:
+				//设置风量：高中低
+				mode_temp=SYS_STA&0x8F;
+				switch(mode_temp)
+				{
+					case 0x81:
+						FAN_set(0x12);
+						break;
+					case 0x83:
+						FAN_set(0x13);
+					break;
+					case 0x87:
+						FAN_set(0x14);
+					break;
+					case 0x8F:
+						FAN_set(0x11);
+					break;
+					default:
+						break;
+				}
+				#ifdef __BUF
+					myuart_send(1,&SYS_STA,1);
+				#endif
+				break;
+				
+			case KEY2_PRES:
+				//其他待定
+				break;
+			
+			default:
+			break;					
+		}
+	}
+}
 
 
