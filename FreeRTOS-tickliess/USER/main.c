@@ -12,6 +12,9 @@
 #include "task.h"
 #include "semphr.h"
 #include "types.h"
+#include "timers.h"
+#include "stmflash.h"
+
 /************************************************
  ALIENTEK 战舰STM32F103开发板 FreeRTOS实验18-1
  FreeRTOS低功耗Tickless模式实验-库函数版本
@@ -42,7 +45,7 @@ TaskHandle_t UART1Task_Handler;
 void UART1_task(void *pvParameters);
 
 /*串口2任务*/
-//任务优先级，
+//任务优先级
 #define UART2_TASK_PRIO		3
 //任务堆栈大小	
 #define UART2_STK_SIZE 		256  
@@ -67,6 +70,8 @@ Dev_control_t DEVCON_data;//设备控制
 Dev_dp_t  DEVIDSET_data;
 Head_up_t HEAD_data;
 
+u16 DEV_ID[2];
+
 void PreSleepProcessing(uint32_t ulExpectedIdleTime);
 void PostSleepProcessing(uint32_t ulExpectedIdleTime);
 
@@ -77,6 +82,12 @@ void LowerToCap(u8 *str,u8 len);
 //二值信号量句柄
 SemaphoreHandle_t BinarySemaphore;	//二值信号量句柄
 SemaphoreHandle_t BinarySemaphore_uart2;	//串口2二值信号量句柄
+
+TimerHandle_t 	AutoReloadTimer_Handle;			//周期定时器句柄
+TimerHandle_t	OneShotTimer_Handle;			//单次定时器句柄
+
+void AutoReloadCallback(TimerHandle_t xTimer); 	//周期定时器回调函数
+void OneShotCallback(TimerHandle_t xTimer);		//单次定时器回调函数
 
 //用于命令解析用的命令类型
 #define SYSTEM	  0x01    
@@ -139,10 +150,10 @@ void CommandProcess(u8 buf[],u8 len)
 			if(CMD_data == 0xFD)
 			{
 				//写入设备ID
-				mymemcpy(DEVIDSET_data.data_buf,buf,len);
+				
 			}
 			break;
-		case 0x16:
+		case 0x18:
 			if(CMD_data == 0x05)
 			{
 				mymemcpy(DEVCON_data.data_buf,buf,len);
@@ -178,6 +189,7 @@ int main(void)
 	KEY_Init();							//初始化按键
 	BEEP_Init();						//初始化蜂鸣器
 	my_mem_init(SRAMIN);            	//初始化内部内存池
+	//STMFLASH_Read(FLASH_SAVE_ADDR,DEV_ID,2);
 	
 	//创建开始任务
     xTaskCreate((TaskFunction_t )start_task,            //任务函数
@@ -192,12 +204,32 @@ int main(void)
 //开始任务任务函数
 void start_task(void *pvParameters)
 {
-    taskENTER_CRITICAL();           //进入临界区
-	
+  taskENTER_CRITICAL();           //进入临界区
 	//创建二值信号量
 	BinarySemaphore=xSemaphoreCreateBinary();
 	//串口2二值信号量
 	BinarySemaphore_uart2=xSemaphoreCreateBinary();
+	
+	 //创建软件周期定时器
+  AutoReloadTimer_Handle=xTimerCreate((const char*		)"AutoReloadTimer",
+									    (TickType_t			)10000,
+							            (UBaseType_t		)pdTRUE,
+							            (void*				)1,
+							            (TimerCallbackFunction_t)AutoReloadCallback); //周期定时器，周期1s(1000个时钟节拍)，周期模式
+												
+	/*												
+    //创建单次定时器
+	OneShotTimer_Handle=xTimerCreate((const char*			)"OneShotTimer",
+							         (TickType_t			)2000,
+							         (UBaseType_t			)pdFALSE,
+							         (void*					)2,
+							         (TimerCallbackFunction_t)OneShotCallback); //单次定时器，周期2s(2000个时钟节拍)，单次模式		
+	*/										
+		if(AutoReloadTimer_Handle!=NULL)
+		{
+			xTimerStart(AutoReloadTimer_Handle,0);	//开启周期定时器
+		}
+	
     //创建UART2任务，检测PM2.5
     xTaskCreate((TaskFunction_t )UART2_task,             
                 (const char*    )"UART2_task",           
@@ -206,7 +238,7 @@ void start_task(void *pvParameters)
                 (UBaseType_t    )UART2_TASK_PRIO,        
                 (TaskHandle_t*  )&UART2Task_Handler);   
     //创建UART1任务
-    xTaskCreate((TaskFunction_t )UART1_task,     
+    xTaskCreate((TaskFunction_t )UART1_task,
                 (const char*    )"UART1_task",   
                 (uint16_t       )UART1_STK_SIZE,
                 (void*          )NULL,
@@ -219,9 +251,16 @@ void start_task(void *pvParameters)
                 (void*          )NULL,
                 (UBaseType_t    )KEY_TASK_PRIO,
                 (TaskHandle_t*  )&KEYTask_Handler); 
-								
+							
     vTaskDelete(StartTask_Handler); //删除开始任务
     taskEXIT_CRITICAL();            //退出临界区						
+}
+
+//周期定时器的回调函数
+void AutoReloadCallback(TimerHandle_t xTimer)
+{
+	//myuart_send(1,"1234",4);
+	
 }
 
 //UART2任务函数
@@ -238,14 +277,14 @@ void UART2_task(void *pvParameters)
 			len=USART2_RX_STA&0x3fff;						//得到此次接收到的数据长度
 			//CommandStr=mymalloc(SRAMIN,len);			myfree(SRAMIN,CommandStr); //释放内存	//申请内存
 			mymemcpy(PM25_data.data_buf,USART2_RX_BUF,len);
-			//#ifdef __DEBUG
+			#ifdef __DEBUG
 			myuart_send(2,PM25_data.data_buf,len);
-			//#endif
+			#endif
 		
 			USART2_RX_STA=0;
 			memset(USART2_RX_BUF,0,USART_REC_LEN);			//串口接收缓冲区清零
-			
 		}
+		 vTaskDelay(10); //延时10ms，也就是10个时钟节拍
 	}
 }
 
@@ -254,7 +293,6 @@ void UART1_task(void *pvParameters)
 {
 	u8 len=0;
 	BaseType_t err=pdFALSE;
-	
 	u8 CommandStr[40];
 	while(1)
 	{
@@ -264,13 +302,16 @@ void UART1_task(void *pvParameters)
 			len=USART_RX_STA&0x3fff;						//得到此次接收到的数据长度
 
 			mymemcpy(CommandStr,USART_RX_BUF,len);
-
-			CommandProcess(CommandStr,len);		//命令解析
+			CommandStr[len]=0x0D;
+			CommandStr[len+1]=0x0A;
+			
+			CommandProcess(CommandStr,len+2);		//命令解析
 		
 			USART_RX_STA=0;
 			memset(USART_RX_BUF,0,USART_REC_LEN);			//串口接收缓冲区清零
 			memset(CommandStr,0,40);	
 		}
+		 vTaskDelay(10); //延时10ms，也就是10个时钟节拍
 	}
 }
 
@@ -320,7 +361,7 @@ void KEY_task(void *pvParameters)
 					default:
 						break;
 				}
-				#ifdef __BUF
+				#ifdef __DEBUG
 					myuart_send(1,&SYS_STA,1);
 				#endif
 				break;
@@ -332,7 +373,6 @@ void KEY_task(void *pvParameters)
 			default:
 			break;					
 		}
+		 vTaskDelay(10); //延时10ms，也就是10个时钟节拍
 	}
 }
-
-

@@ -53,3 +53,5 @@
 ..\obj\main.o: ..\FreeRTOS\include\semphr.h
 ..\obj\main.o: ..\FreeRTOS\include\queue.h
 ..\obj\main.o: types.h
+..\obj\main.o: ..\FreeRTOS\include\timers.h
+..\obj\main.o: ..\HARDWARE\FLASH\stmflash.h
