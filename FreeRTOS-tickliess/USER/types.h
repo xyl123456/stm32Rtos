@@ -35,7 +35,7 @@ typedef union Data_up
    struct data_up_t
    {
        unsigned char Head_byte[2];//0xEB 0x90
-       unsigned char Data_length[2];//0x00 0x17
+       unsigned char Data_length[2];//0x00 0x1D
        unsigned char Data_type; //数据的类型0x04
        unsigned char MAC_addr[4];   //设备地址 
        unsigned char PM25[3];//第一个字节0x01,后两个是数据，数据为整数
@@ -43,7 +43,7 @@ typedef union Data_up
        unsigned char TEM[3];//第一个字节0x03,后两个是数据,数据为1000+数据准换16
        unsigned char HUM[3];//第一个字节0x04,后两个是数据,数据为1000+数据准换16
        unsigned char POW[3];//第一个字节0x0A,后两个是数据，数据为百分比
-       unsigned char POW_STA[3];//如果充电则为0X01，不充电为0x00
+       unsigned char POW_STA[3];//如果充电则为0X01，不充电为0x00,格式0x0f，0x00,0x00
        unsigned char Check_code[2];//校验码，除去包头和包尾所有字节的累加和
        unsigned char Tial[2];//0x0D 0x0A
    }data_core;
@@ -120,11 +120,35 @@ typedef union Dev_up
    struct dec_up_t
    {
        unsigned char Head_byte[2];//0xEB 0x90
-       unsigned char Data_length[2];//0x00 0x0D
+       unsigned char Data_length[2];//0x00 0x0B
        unsigned char Data_type; //数据的类型0xFE
        unsigned char MAC_addr[4];   //设备地址 
        unsigned char Check_code[2];//校验码，除去包头和包尾所有字节的累加和
        unsigned char Tial[2];//0x0D 0x0A
    }data_core;
 }Dev_up_t;
+
+
+typedef struct SHT30_DATA_STAUCT
+{
+  unsigned char Temp_byte[3];//温度字符串字节表示
+  unsigned char Humi_byte[3];//湿度字符串字节表示
+  int Temp_int;//温度
+  int Humi_int;//湿度
+  float  Temp;
+  float  Humi;
+}SHT30_DATA_STRUCT;
+
+extern void LowerToCap(u8 *str,u8 len);
+extern void CommandProcess(u8 buf[],u8 len);
+
+extern PM25_up_t PM25_data;
+extern Dev_control_t DEVCON_data;//设备控制
+extern Dev_dp_t  DEVIDSET_data;
+extern Dev_up_t  DEVUP_data;
+extern Head_up_t HEAD_data;
+
+extern u16 DEV_ID[2];
+extern void Send_data(void);
+
 #endif

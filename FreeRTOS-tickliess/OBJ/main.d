@@ -55,3 +55,4 @@
 ..\obj\main.o: types.h
 ..\obj\main.o: ..\FreeRTOS\include\timers.h
 ..\obj\main.o: ..\HARDWARE\FLASH\stmflash.h
+..\obj\main.o: ..\HARDWARE\SHT3X\sht3x.h

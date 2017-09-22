@@ -14,7 +14,7 @@
 #include "types.h"
 #include "timers.h"
 #include "stmflash.h"
-
+#include "sht3x.h"
 /************************************************
  ALIENTEK 战舰STM32F103开发板 FreeRTOS实验18-1
  FreeRTOS低功耗Tickless模式实验-库函数版本
@@ -65,18 +65,8 @@ TaskHandle_t KEYTask_Handler;
 void KEY_task(void *pvParameters);
 
 
-PM25_up_t PM25_data;
-Dev_control_t DEVCON_data;//设备控制
-Dev_dp_t  DEVIDSET_data;
-Head_up_t HEAD_data;
-
-u16 DEV_ID[2];
-
 void PreSleepProcessing(uint32_t ulExpectedIdleTime);
 void PostSleepProcessing(uint32_t ulExpectedIdleTime);
-
-void LowerToCap(u8 *str,u8 len);
-void CommandProcess(u8 buf[],u8 len);
 
 void LowerToCap(u8 *str,u8 len);
 //二值信号量句柄
@@ -117,68 +107,6 @@ void PostSleepProcessing(uint32_t ulExpectedIdleTime)
 */	
 }
 
-//将字符串中的小写字母转换为大写
-//str:要转换的字符串
-//len：字符串长度
-void LowerToCap(u8 *str,u8 len)
-{
-	u8 i;
-	for(i=0;i<len;i++)
-	{
-		if((96<str[i])&&(str[i]<123))	//小写字母
-		str[i]=str[i]-32;				//转换为大写
-	}
-}
-
-//命令处理函数，将字符串命令转换成命令值
-//str：命令
-//返回值: 0XFF，命令错误；其他值，命令值
-void CommandProcess(u8 buf[],u8 len)
-{
-	u8 CMD_data=buf[4];
-	u8 data_buf[40];
-	mymemcpy(data_buf,buf,len);
-	switch(len)
-	{
-		case 0x0d:
-			if(CMD_data == 0x01)
-			{
-				//心跳
-				mymemcpy(HEAD_data.data_buf,buf,len);
-				
-			}
-			if(CMD_data == 0xFD)
-			{
-				//写入设备ID
-				
-			}
-			break;
-		case 0x18:
-			if(CMD_data == 0x05)
-			{
-				mymemcpy(DEVCON_data.data_buf,buf,len);
-				//控制
-				if(DEVCON_data.data_core.Cmd_code[0]==0x81)
-				{
-					//开关机,关闭屏幕，继电器，PM25等外设
-					
-				}
-				if(DEVCON_data.data_core.Cmd_code[0]==0x82)
-				{
-					//负离子，紫外灯
-				}
-				if(DEVCON_data.data_core.Cmd_code[0]==0x84)
-				{
-					//风机0-4
-					FAN_set(DEVCON_data.data_core.Cmd_code[2]);
-				}
-			}
-			break;
-			default:
-			break;	
-	}
-}
-
 int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//设置系统中断优先级分组4	 
@@ -188,8 +116,9 @@ int main(void)
 	LED_Init();		  					//初始化LED
 	KEY_Init();							//初始化按键
 	BEEP_Init();						//初始化蜂鸣器
+	SHT3X_Init();           //初始化I2C温湿度模块
 	my_mem_init(SRAMIN);            	//初始化内部内存池
-	//STMFLASH_Read(FLASH_SAVE_ADDR,DEV_ID,2);
+	STMFLASH_Read(FLASH_SAVE_ADDR,DEV_ID,2);
 	
 	//创建开始任务
     xTaskCreate((TaskFunction_t )start_task,            //任务函数
@@ -259,8 +188,8 @@ void start_task(void *pvParameters)
 //周期定时器的回调函数
 void AutoReloadCallback(TimerHandle_t xTimer)
 {
-	//myuart_send(1,"1234",4);
 	
+	Send_data();
 }
 
 //UART2任务函数
@@ -268,7 +197,6 @@ void UART2_task(void *pvParameters)
 {
 	u8 len=0;
 	BaseType_t err=pdFALSE;
-	
 	while(1)
 	{
 		err=xSemaphoreTake(BinarySemaphore_uart2,portMAX_DELAY);	//获取信号量
@@ -332,7 +260,7 @@ void KEY_task(void *pvParameters)
 			{
 				FAN_set(0x11);//默认一档风
 			}
-			#ifdef __BUG
+			#ifdef __DEBUG
 			myuart_send(1,&SYS_STA,1);
 			#endif
 				break;

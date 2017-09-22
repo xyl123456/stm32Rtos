@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\USER;..\CORE;..\STM32F10x_FWLib\inc;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\MALLOC;..\FreeRTOS\include;..\FreeRTOS\portable\RVDS\ARM_CM3;..\HARDWARE\LED;..\HARDWARE\TIMER;..\HARDWARE\LCD;..\HARDWARE\EXTI;..\HARDWARE\KEY;..\HARDWARE\BEEP;..\HARDWARE\FLASH</IncludePath>
+              <IncludePath>..\USER;..\CORE;..\STM32F10x_FWLib\inc;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\MALLOC;..\FreeRTOS\include;..\FreeRTOS\portable\RVDS\ARM_CM3;..\HARDWARE\LED;..\HARDWARE\TIMER;..\HARDWARE\LCD;..\HARDWARE\EXTI;..\HARDWARE\KEY;..\HARDWARE\BEEP;..\HARDWARE\FLASH;..\HARDWARE\SHT3X</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -423,6 +423,11 @@
               <FileType>1</FileType>
               <FilePath>.\system_stm32f10x.c</FilePath>
             </File>
+            <File>
+              <FileName>types.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\types.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -457,6 +462,16 @@
               <FileName>stmflash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\FLASH\stmflash.c</FilePath>
+            </File>
+            <File>
+              <FileName>SHT_3X_I2C.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\SHT3X\SHT_3X_I2C.c</FilePath>
+            </File>
+            <File>
+              <FileName>sht3x.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\SHT3X\sht3x.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -542,6 +557,11 @@
               <FileName>stm32f10x_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_i2c.c</FilePath>
             </File>
           </Files>
         </Group>
