@@ -35,10 +35,14 @@ extern u16 USART_RX_STA;         		//接收状态标记
 extern u8  USART2_RX_BUF[USART_REC_LEN]; //接收缓冲,最大USART_REC_LEN个字节.末字节为换行符 
 extern u16 USART2_RX_STA;         		//接收状态标记
 
+extern u8  USART3_RX_BUF[USART_REC_LEN]; //接收缓冲,最大USART_REC_LEN个字节.末字节为换行符 
+extern u16 USART3_RX_STA;         		//接收状态标记
+
 extern void myuart_send(u8 port,u8 buf[],u8 len);
 //如果想串口中断接收，请不要注释以下宏定义
 void uart_init(u32 bound);
 void uart_init2(u32 bound);
+void uart_init3(u32 bound);
 extern void myuart_init(u8 port,u32 bound);
 
 #endif

@@ -38,7 +38,7 @@
 void SHT_3X_I2C_SDA_OUT(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	//GPIO_InitStructure.Pull = GPIO_NOPULL;
@@ -56,7 +56,7 @@ void SHT_3X_I2C_SDA_OUT(void)
 void SHT_3X_I2C_SDA_IN(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	//GPIO_InitStructure.Pull = GPIO_NOPULL;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -73,7 +73,7 @@ void SHT_3X_I2C_SDA_IN(void)
 void SHT_3X_I2C_SCL_OUT(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	//GPIO_InitStructure.Pull = GPIO_NOPULL;
@@ -92,7 +92,7 @@ void SHT_3X_I2C_SCL_IN(void)
 {
 
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	//GPIO_InitStructure.Pull = GPIO_NOPULL;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);

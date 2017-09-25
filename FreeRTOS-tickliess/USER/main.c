@@ -54,9 +54,19 @@ TaskHandle_t UART2Task_Handler;
 //任务函数
 void UART2_task(void *pvParameters);
 
+/*串口3任务*/
+//任务优先级
+#define UART3_TASK_PRIO		4
+//任务堆栈大小	
+#define UART3_STK_SIZE 		256  
+//任务句柄
+TaskHandle_t UART3Task_Handler;
+//任务函数
+void UART3_task(void *pvParameters);
+
 /*按键处理任务*/
 //任务优先级，
-#define KEY_TASK_PRIO		4
+#define KEY_TASK_PRIO		5
 //任务堆栈大小	
 #define KEY_STK_SIZE 		256  
 //任务句柄
@@ -72,6 +82,7 @@ void LowerToCap(u8 *str,u8 len);
 //二值信号量句柄
 SemaphoreHandle_t BinarySemaphore;	//二值信号量句柄
 SemaphoreHandle_t BinarySemaphore_uart2;	//串口2二值信号量句柄
+SemaphoreHandle_t BinarySemaphore_uart3;	//串口3二值信号量句柄
 
 TimerHandle_t 	AutoReloadTimer_Handle;			//周期定时器句柄
 TimerHandle_t	OneShotTimer_Handle;			//单次定时器句柄
@@ -107,13 +118,21 @@ void PostSleepProcessing(uint32_t ulExpectedIdleTime)
 */	
 }
 
+//LCD刷屏时使用的颜色
+int lcd_discolor[14]={	WHITE, BLACK, BLUE,  BRED,      
+						GRED,  GBLUE, RED,   MAGENTA,       	 
+						GREEN, CYAN,  YELLOW,BROWN, 			
+						BRRED, GRAY };
+
 int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//设置系统中断优先级分组4	 
 	delay_init();	    				//延时函数初始化	 
 	myuart_init(1,115200);//初始化串口1
 	myuart_init(2,9600);//初始化串口2
+	myuart_init(3,115200);//初始化串口3
 	LED_Init();		  					//初始化LED
+//	LCD_Init();
 	KEY_Init();							//初始化按键
 	BEEP_Init();						//初始化蜂鸣器
 	SHT3X_Init();           //初始化I2C温湿度模块
@@ -138,6 +157,8 @@ void start_task(void *pvParameters)
 	BinarySemaphore=xSemaphoreCreateBinary();
 	//串口2二值信号量
 	BinarySemaphore_uart2=xSemaphoreCreateBinary();
+		//串口3二值信号量
+	BinarySemaphore_uart3=xSemaphoreCreateBinary();
 	
 	 //创建软件周期定时器
   AutoReloadTimer_Handle=xTimerCreate((const char*		)"AutoReloadTimer",
@@ -159,13 +180,6 @@ void start_task(void *pvParameters)
 			xTimerStart(AutoReloadTimer_Handle,0);	//开启周期定时器
 		}
 	
-    //创建UART2任务，检测PM2.5
-    xTaskCreate((TaskFunction_t )UART2_task,             
-                (const char*    )"UART2_task",           
-                (uint16_t       )UART2_STK_SIZE,        
-                (void*          )NULL,                  
-                (UBaseType_t    )UART2_TASK_PRIO,        
-                (TaskHandle_t*  )&UART2Task_Handler);   
     //创建UART1任务
     xTaskCreate((TaskFunction_t )UART1_task,
                 (const char*    )"UART1_task",   
@@ -173,6 +187,20 @@ void start_task(void *pvParameters)
                 (void*          )NULL,
                 (UBaseType_t    )UART1_TASK_PRIO,
                 (TaskHandle_t*  )&UART1Task_Handler); 
+		//创建UART2任务，检测PM2.5
+    xTaskCreate((TaskFunction_t )UART2_task,             
+                (const char*    )"UART2_task",           
+                (uint16_t       )UART2_STK_SIZE,        
+                (void*          )NULL,                  
+                (UBaseType_t    )UART2_TASK_PRIO,        
+                (TaskHandle_t*  )&UART2Task_Handler); 
+    //创建UART3任务，串口屏幕
+    xTaskCreate((TaskFunction_t )UART3_task,             
+                (const char*    )"UART3_task",           
+                (uint16_t       )UART3_STK_SIZE,        
+                (void*          )NULL,                  
+                (UBaseType_t    )UART3_TASK_PRIO,        
+                (TaskHandle_t*  )&UART3Task_Handler);   								
 		//创建按键任务
     xTaskCreate((TaskFunction_t )KEY_task,     
                 (const char*    )"KEY_task",   
@@ -190,6 +218,33 @@ void AutoReloadCallback(TimerHandle_t xTimer)
 {
 	
 	Send_data();
+}
+
+//UART1_task函数
+void UART1_task(void *pvParameters)
+{
+	u8 len=0;
+	BaseType_t err=pdFALSE;
+	u8 CommandStr[40];
+	while(1)
+	{
+		err=xSemaphoreTake(BinarySemaphore,portMAX_DELAY);	//获取信号量
+		if(err==pdTRUE)										//获取信号量成功
+		{
+			len=USART_RX_STA&0x3fff;						//得到此次接收到的数据长度
+
+			mymemcpy(CommandStr,USART_RX_BUF,len);
+			CommandStr[len]=0x0D;
+			CommandStr[len+1]=0x0A;
+			
+			CommandProcess(CommandStr,len+2);		//命令解析
+		
+			USART_RX_STA=0;
+			memset(USART_RX_BUF,0,USART_REC_LEN);			//串口接收缓冲区清零
+			memset(CommandStr,0,40);	
+		}
+		 vTaskDelay(10); //延时10ms，也就是10个时钟节拍
+	}
 }
 
 //UART2任务函数
@@ -216,27 +271,27 @@ void UART2_task(void *pvParameters)
 	}
 }
 
-//UART1_task函数
-void UART1_task(void *pvParameters)
+//UART3_task函数
+void UART3_task(void *pvParameters)
 {
 	u8 len=0;
 	BaseType_t err=pdFALSE;
 	u8 CommandStr[40];
 	while(1)
 	{
-		err=xSemaphoreTake(BinarySemaphore,portMAX_DELAY);	//获取信号量
+		err=xSemaphoreTake(BinarySemaphore_uart3,portMAX_DELAY);	//获取信号量
 		if(err==pdTRUE)										//获取信号量成功
 		{
-			len=USART_RX_STA&0x3fff;						//得到此次接收到的数据长度
+			len=USART3_RX_STA&0x3fff;						//得到此次接收到的数据长度
 
-			mymemcpy(CommandStr,USART_RX_BUF,len);
+			mymemcpy(CommandStr,USART3_RX_BUF,len);
 			CommandStr[len]=0x0D;
 			CommandStr[len+1]=0x0A;
 			
-			CommandProcess(CommandStr,len+2);		//命令解析
-		
-			USART_RX_STA=0;
-			memset(USART_RX_BUF,0,USART_REC_LEN);			//串口接收缓冲区清零
+			//CommandProcess(CommandStr,len+2);		//命令解析
+			myuart_send(3,CommandStr,len+2);
+			USART3_RX_STA=0;
+			memset(USART3_RX_BUF,0,USART_REC_LEN);			//串口接收缓冲区清零
 			memset(CommandStr,0,40);	
 		}
 		 vTaskDelay(10); //延时10ms，也就是10个时钟节拍

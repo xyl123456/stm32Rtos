@@ -16,14 +16,14 @@
 	#define   SHT_3X_I2C_TYPE   extern
 #endif
 
-#define  SHT_3X_SDA_L                                                   GPIO_ResetBits(GPIOB,GPIO_Pin_11)
-#define  SHT_3X_SDA_H                                                   GPIO_SetBits(GPIOB,GPIO_Pin_11)
-#define  SHT_3X_SCL_L                                                  	GPIO_ResetBits(GPIOB,GPIO_Pin_10)
-#define  SHT_3X_SCL_H                                                   GPIO_SetBits(GPIOB,GPIO_Pin_10)
+#define  SHT_3X_SDA_L                                                   GPIO_ResetBits(GPIOB,GPIO_Pin_7)
+#define  SHT_3X_SDA_H                                                   GPIO_SetBits(GPIOB,GPIO_Pin_7)
+#define  SHT_3X_SCL_L                                                  	GPIO_ResetBits(GPIOB,GPIO_Pin_6)
+#define  SHT_3X_SCL_H                                                   GPIO_SetBits(GPIOB,GPIO_Pin_6)
 
 
-#define  SHT_3X_SDA_IN                                                  GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_11)
-#define  SHT_3X_SCL_IN                                                   GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_10)
+#define  SHT_3X_SDA_IN                                                  GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_7)
+#define  SHT_3X_SCL_IN                                                   GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_6)
 
 #define  SHT_3X_DELAY_COUNT                                      (unsigned char)5
 
